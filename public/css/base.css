@@ -1,0 +1,14 @@
+.page-content{
+    top: 5%;
+    position: absolute;
+    width: 90%;
+    height: 100%;
+    left: 5%;
+}
+
+.Form{
+    position: absolute;
+    top: 3%;    
+    width: 100%;
+    height: 100%;
+}
