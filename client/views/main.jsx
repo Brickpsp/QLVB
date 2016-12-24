@@ -18,8 +18,9 @@ export default class Main extends TrackerReact(React.Component) {
             alert: true,
             refresh: true
         }
-        Session.set('search', "");
-
+        if(Meteor.isClient) {
+            Session.set('search', "");
+        }
     }
 
     componentDidMount() {
