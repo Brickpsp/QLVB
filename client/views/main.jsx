@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import TrackerReact from 'meteor/ultimatejs:tracker-react';
 var ReactDom = require('react-dom');
+var Dropzone = require('react-dropzone');
 import { DateField, DatePicker } from 'react-date-picker'
 import 'react-date-picker/index.css'
-import { Layout, Table, TableHeader, Header, Navigation, Drawer, Content, Button, Badge, Icon, Textfield, Card, CardTitle, CardText, CardActions, Grid, Cell, ProgressBar } from 'react-mdl';
+import { Layout, Table, TableHeader, Header, Navigation, Drawer, Content, Button, Badge, Icon, Textfield, Card, CardTitle, CardText, CardActions, Grid, Cell, ProgressBar, IconButton } from 'react-mdl';
 data = new Mongo.Collection('data');
-var g_data = {};
+var filedata;
+var filename;
 
 export default class Main extends TrackerReact(React.Component) {
     constructor(props) {
@@ -18,7 +20,7 @@ export default class Main extends TrackerReact(React.Component) {
             alert: true,
             refresh: true
         }
-        if(Meteor.isClient) {
+        if (Meteor.isClient) {
             Session.set('search', "");
         }
     }
@@ -40,16 +42,35 @@ export default class Main extends TrackerReact(React.Component) {
         this.setState({ form: false });
     }
 
+    onDrop(acceptedFiles, rejectedFiles) {
+        //saveFile(acceptedFiles, acceptedFiles.name);
+        file = acceptedFiles[0]
+
+        var fileReader = new FileReader(),
+
+            method = 'readAsBinaryString';
+        encoding = 'binary';
+        filename = file.name;
+
+        fileReader.onload = function (file) {
+            filedata = file.srcElement.result
+            //Meteor.call('saveFile', file.srcElement.result, name, encoding);
+        }
+        fileReader[method](file);
+    }
+
     submitform() {
         Session.set('search', "");
         var title = this.refs.title.inputRef.value.trim();
         var codecv = this.refs.codecv.inputRef.value.trim();
-        var note = this.refs.note.inputRef.value.trim();
+        //var note = this.refs.note.inputRef.value.trim();
+        var nk_cv = this.refs.nk_cv.inputRef.value.trim();
+        var dvxl = this.refs.dvxl.inputRef.value.trim();
         var expiryDate = this.refs.expiryDate.field.displayValue.trim();
-
+        //console.log(file)
         if (title && codecv && expiryDate) {
 
-            Meteor.call("adddata", title, codecv, expiryDate, note, (error) => {
+            Meteor.call("adddata", title, codecv, expiryDate, filedata, filename, nk_cv, dvxl, (error) => {
                 if (error) {
                     Bert.alert("Lỗi");
                 }
@@ -117,12 +138,12 @@ export default class Main extends TrackerReact(React.Component) {
 
 
     render() {
-        g_data = this.get_datas();
+        var g_data = this.get_datas();
 
         return (
             <div>
-                <Layout>
-                    <Header style={{ background: "cadetblue" }} title={<span style={{ fontSize: 32 }}>Thông Báo Thời Hạn Công Văn</span>} scroll>
+                <Layout fixedHeader>
+                    <Header style={{ background: "cadetblue" }} title={<span style={{ fontSize: 32 }}>Thông Báo Thời Hạn Công Văn</span>} scroll >
 
                         <Textfield
                             onChange={() => { } }
@@ -148,12 +169,30 @@ export default class Main extends TrackerReact(React.Component) {
                                         <CardTitle style={{ color: '#fff', height: '120px', background: 'lightsalmon' }}>Nhập Công Văn</CardTitle>
                                         <CardText style={{ height: '100%' }}>
                                             <Grid>
-                                                <Cell col={6}><Textfield
+                                                <Cell col={8}>
+                                                    <Textfield
+                                                        onChange={() => { } }
+                                                        label="Mã Công Văn"
+                                                        ref="codecv"
+                                                        floatingLabel
+                                                        style={{ width: '600px' }}
+                                                        />
+                                                </Cell>
+                                                <Cell col={4}>
+                                                    <Dropzone className="dropzone" onDrop={this.onDrop}>
+                                                        <div>Kéo Và Thả Công Văn Cần Lưu Trữ Vào Đây</div>
+                                                    </Dropzone>
+                                                </Cell>
+                                            </Grid>
+                                            <Grid>
+                                                <Cell col={8}><Textfield
                                                     ref="title"
                                                     label="Tên Công Văn"
                                                     floatingLabel
                                                     style={{ width: '600px' }}
                                                     /></Cell>
+                                            </Grid>
+                                            <Grid>
                                                 <Cell col={4}>
                                                     <div className="label_dt">Ngày hết hạn</div>
                                                     <DateField className="rdt"
@@ -177,26 +216,25 @@ export default class Main extends TrackerReact(React.Component) {
                                                             />
                                                     </DateField>
                                                 </Cell>
-                                                <Cell col={2}>
-                                                    <Textfield
-                                                        onChange={() => { } }
-                                                        label="Mã Công Văn"
-                                                        ref="codecv"
-                                                        floatingLabel
-                                                        style={{ width: '600px' }}
-                                                        />
-                                                </Cell>
                                             </Grid>
+
                                             <Grid>
                                                 <Cell col={12}>
                                                     <Textfield
-                                                        ref="note"
-                                                        label="Ghi Chú"
+                                                        ref="nk_cv"
+                                                        label="Người Ký Công Văn"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
                                                         />
                                                 </Cell>
-
+                                                <Cell col={12}>
+                                                    <Textfield
+                                                        ref="dvxl"
+                                                        label="Đơn Vị Xử Lý"
+                                                        floatingLabel
+                                                        style={{ width: '100%' }}
+                                                        />
+                                                </Cell>
                                             </Grid>
                                             <Grid>
                                                 <Cell col={6} >
@@ -206,20 +244,13 @@ export default class Main extends TrackerReact(React.Component) {
                                                         style={{ visibility: "hidden" }}
                                                         />
                                                 </Cell>
-
                                             </Grid>
                                             <Grid style={{ whiteSpace: "nowrap" }}>
-                                                <Cell col={9} />
+                                                <Cell col={9}></Cell>
                                                 <Cell col={2}><Button raised colored ripple style={{ fontWeight: "normal", width: '100%' }} onClick={this.submitform.bind(this)}>Đồng Ý</Button></Cell>
                                                 <Cell col={1}><Button raised ripple style={{ fontWeight: "normal" }} onClick={this.closeform.bind(this)}>Hủy Bỏ</Button></Cell>
-
-
                                             </Grid>
-
-
                                         </CardText>
-
-
                                     </Card>
                                 </div>
                                 :
@@ -235,21 +266,33 @@ export default class Main extends TrackerReact(React.Component) {
                                         rows={g_data}
                                         >
                                         <TableHeader
-                                            name="title"
-                                            >
-                                            Tên Công Văn
-                                        </TableHeader>
-                                        <TableHeader
-                                            name="note"
-                                            >
-                                            Ghi Chú
-                                        </TableHeader>
-                                        <TableHeader
                                             name="codecv"
 
                                             >
                                             Mã Công Văn
                                         </TableHeader>
+                                        <TableHeader
+                                            name="title"
+                                            >
+                                            Tên Công Văn
+                                        </TableHeader>
+                                        <TableHeader
+                                            name="nk_cv"
+                                            >
+                                            Người Ký Công Văn
+                                        </TableHeader>
+                                        <TableHeader
+                                            name="dvxl"
+                                            >
+                                            Đơn Vị Xử Lý
+                                        </TableHeader>
+                                        <TableHeader
+                                            name="filename"
+                                            cellFormatter={(filename) => <IconButton name="file_download" colored href={"/file/" + filename} />}
+                                            >
+                                            Lưu Trữ
+                                        </TableHeader>
+
                                         <TableHeader
                                             name="state"
                                             cellFormatter={(state) => state == 1 ?

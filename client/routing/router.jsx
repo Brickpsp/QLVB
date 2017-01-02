@@ -11,3 +11,10 @@ FlowRouter.route("/", {
   } 
 });
 
+FlowRouter.route('/file/:filename', {
+    action(params, queryParams) {       
+        window.open('/file/' + params.filename);
+        FlowRouter.redirect('/');        
+    },    
+});
+
