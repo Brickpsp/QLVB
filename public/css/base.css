@@ -1,8 +1,14 @@
-.page-content{
+.page-content{    
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.table-content{
     top: 5%;
     position: absolute;
-    width: 90%;
-    height: 100%;
+    width: 90%;    
     left: 5%;
 }
 
@@ -58,4 +64,14 @@
 
   /* Support for IE. */
   font-feature-settings: 'liga';
+}
+
+.mdl-textfield__label{
+    color: #3f51b5 !important;
+}
+
+.page{    
+    width: 50%;
+    border: solid black 1px;
+    top: 10%;
 }

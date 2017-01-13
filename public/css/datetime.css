@@ -2,7 +2,7 @@
  * https://github.com/arqex/react-datetime
  */
 .label_dt{
-  
+  color: #3f51b5 !important;
   margin-top: -5px
 }
 .form-control{
@@ -11,7 +11,7 @@
 
 .rdt {  
   top: 30%;
-  width: 100%;
+  width: 80%;
 }
 .rdtPicker {
   display: none;
