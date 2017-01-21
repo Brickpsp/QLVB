@@ -9,10 +9,12 @@ data = new Mongo.Collection('data');
 data2 = new Mongo.Collection('data2');
 
 // <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+//<meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+DocHead.addMeta({name: "viewport", content: "width=device-width, initial-scale=1"});
 DocHead.setTitle('Quản Lý Công Văn');
 export const MainLayout = ({content}) => (  
   <div>         
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>     
+            
         <div>{content}</div>             
  </div>
 );

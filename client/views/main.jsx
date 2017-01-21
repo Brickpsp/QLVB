@@ -34,7 +34,7 @@ export default class Main extends React.Component {
     }
 
     choosepage(page) {
-        if (page == 1) {            
+        if (page == 1) {
             FlowRouter.go("/vbden");
         }
         if (page == 2) {
@@ -51,7 +51,7 @@ export default class Main extends React.Component {
         return (
             <div>
                 <Layout fixedHeader>
-                    <Header style={{ background: "rgb(63,81,181)" }} title={<span style={{ fontSize: 32 }}>Quản Lý Văn Bản v1.0</span>} scroll >
+                    <Header style={{ background: "rgb(63,81,181)" }} title={<span style={{ fontSize: 32 }}>QUẢN LÝ VĂN BẢN v1.0</span>} scroll >
                     </Header>
                     <Content>
                         {
@@ -74,12 +74,12 @@ export default class Main extends React.Component {
                                 <div />
                         }
 
-                        <Button accent ripple className="page" style={{ fontWeight: "normal", height: "500px", position: "absolute" }} onClick={this.choosepage.bind(this, 1)}>
+                        <Button accent ripple className="page" style={{ fontWeight: "normal", height: "100%", top: "0", position: "absolute" }} onClick={this.choosepage.bind(this, 1)}>
                             <Icon name="archive" style={{ fontSize: "120px", color: "forestgreen" }} />
                             <a>Văn Bản Đến</a>
                         </Button>
 
-                        <Button accent ripple className="page" style={{ fontWeight: "normal", right: "0", height: "500px", position: "absolute" }} onClick={this.choosepage.bind(this, 2)}>
+                        <Button accent ripple className="page" style={{ fontWeight: "normal", right: "0", top: "0", height: "100%", position: "absolute" }} onClick={this.choosepage.bind(this, 2)}>
                             <Icon name="unarchive" style={{ fontSize: "120px", color: "forestgreen" }} />
                             <a>Văn Bản Đi</a>
                         </Button>

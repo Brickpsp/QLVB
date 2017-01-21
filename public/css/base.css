@@ -20,13 +20,13 @@
 }
 
 .dropzone {
-    position: absolute;
-    width: 300px;
+    position: relative;   
     height: 240px;
     border-width: 2px;
     border-color: rgb(102, 102, 102);
     border-style: dashed;
     border-radius: 5px;
+    margin-right: 1%;
 }
 
 @font-face {

@@ -76,6 +76,10 @@ Meteor.methods({
         ed = -1
     }
     Meteor.call('saveFile', file, filename, lvb);
+    var fn;
+    if (filename) {
+      fn = lvb + "/" + filename;
+    }    
     data.insert({
       title: title,
       codecv: codecv,
@@ -84,7 +88,7 @@ Meteor.methods({
       expiryDate: expiryDate,
       nk_cv: nk_cv,
       dvxl: dvxl,
-      filename: lvb + "/" + filename,
+      filename: fn,
     });
   },
 
@@ -114,16 +118,20 @@ Meteor.methods({
     data.remove(id);
   },
 
-  adddata2(title, codecv, file, filename, nk_cv, dvxl, lvb) {
-   
-    Meteor.call('saveFile', file, filename, lvb);
+  adddata2(title, codecv, sendDate, file, filename, nk_cv, dvxl, lvb) {
+    Meteor.call('saveFile', file, filename, lvb);    
+    var fn;
+    if (filename) {
+      fn = lvb + "/" + filename;
+    }    
     data2.insert({
       title: title,
       codecv: codecv,
       CreateAT: new Date(),
+      sendDate: sendDate,
       nk_cv: nk_cv,
       dvxl: dvxl,
-      filename: lvb + "/" + filename,
+      filename: fn,
     });
   },
 
@@ -135,14 +143,14 @@ Meteor.methods({
     data2.remove(id);
   },
 
-  saveFile(data, name, lvb) {     
+  saveFile(data, name, lvb) {
     var encoding;
     var future = new Future();
     var path = cleanPath("FileUploaded")
     name = cleanName(name || 'file'), encoding = encoding || 'binary', chroot = "../../../../..";
     path = chroot + (path ? '/' + path + '/' : '/');
     path += lvb + "/"
-    if (data) {
+    if (data != null) {
       fs.writeFile(path + name, data, 'binary', function (err) {
         if (err) {
           throw (err);
@@ -174,5 +182,5 @@ Meteor.publish("allData", function () {
 });
 
 Meteor.publish("allData2", function () {
-  return data2.find({}, { sort: { 'CreateAT': -1 }, limit: 1000 });
+  return data2.find({}, { sort: { 'CreateAT': -1 }, limit: 500 });
 });

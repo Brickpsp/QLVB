@@ -17,7 +17,8 @@ export default class Page1 extends TrackerReact(React.Component) {
             },
             form: false,
             alert: true,
-            refresh: true
+            refresh: true,
+
         }
         if (Meteor.isClient) {
             Session.set('search', "");
@@ -50,18 +51,19 @@ export default class Page1 extends TrackerReact(React.Component) {
     onDrop(acceptedFiles, rejectedFiles) {
         //saveFile(acceptedFiles, acceptedFiles.name);
         file = acceptedFiles[0]
-
         var fileReader = new FileReader()
+        if (file) {
+            method = 'readAsBinaryString';
+            encoding = 'binary';
+            filename = file.name;
+            this.setState({ textOnDrop: "File " + filename + " sẵn sàng upload" });
+            console.log(this.state.textOnDrop);
+            fileReader.onload = function (file) {
+                filedata = file.srcElement.result
 
-        method = 'readAsBinaryString';
-        encoding = 'binary';
-        filename = file.name;
-
-        fileReader.onload = function (file) {
-            filedata = file.srcElement.result
-            //Meteor.call('saveFile', file.srcElement.result, name, encoding);
+            }
+            fileReader[method](file);
         }
-        fileReader[method](file);
     }
 
     submitform() {
@@ -75,7 +77,7 @@ export default class Page1 extends TrackerReact(React.Component) {
 
             Meteor.call("adddata", title, codecv, expiryDate, filedata, filename, nk_cv, dvxl, "vbden", (error) => {
                 if (error) {
-                    Bert.alert("Lỗi");
+                    Bert.alert("Lỗi, cần ít nhất thông tin về tên, mã số và ngày hết hạn của văn bản");
                 }
                 else {
                     Bert.alert('Đã Tạo Công Văn"' + title + '\"', 'info', 'growl-top-left');
@@ -106,10 +108,10 @@ export default class Page1 extends TrackerReact(React.Component) {
             var now = new Date();
 
             if (Session.get('search') == "") {
-                datas = data.find({ $where: function () { return ((new Date(this.expiryDate) - now) / 86400000 >= 0) } }, { sort: { 'CreateAT': -1 }, limit: 100 }).fetch();
+                datas = data.find({ $where: function () { return ((new Date(this.expiryDate) - now) / 86400000 >= 0) } }, { sort: { 'CreateAT': -1 } }).fetch();
             }
             else {
-                datas = data.find({ $where: function () { return (this.codecv.includes(Session.get('search'))) } }, { sort: { 'CreateAT': -1 }, limit: 100 }).fetch();
+                datas = data.find({ $where: function () { return (this.codecv.includes(Session.get('search'))) } }, { sort: { 'CreateAT': -1 } }).fetch();
             }
             if (this.state.alert) {
                 var cnt = 0
@@ -150,33 +152,33 @@ export default class Page1 extends TrackerReact(React.Component) {
         return (
             <div>
                 <Layout fixedHeader>
-                    <Header style={{ background: "cadetblue" }} title={<span style={{ fontSize: 32 }}>Quản Lý Văn Bản Đến</span>} scroll >
-
+                    <Header style={{ background: "cadetblue" }} title={<span style={{ fontSize: 32 }}>QUẢN LÝ VĂN BẢN ĐẾN</span>} scroll >
                         <Textfield
-                            onChange={() => { } }
+                            onChange={() => { this.closeform() } }
                             label="Search"
                             style={{ right: "1%", color: "#ddd" }}
                             expandable
                             expandableIcon="search"
                             ref="search"
                             onKeyPress={this._handleKeyPress.bind(this)}
-
                             />
-
                         <Button raised accent ripple onClick={this.openform.bind(this)}>Thêm Văn Bản</Button>
 
                         {this.state.refresh ? <div /> : <a />}
 
                     </Header>
 
-                    <Content>
+                    <Content style={{ overflow: "hidden" }}>
 
                         {
                             this.state.form ?
                                 <div className="Form" >
                                     <Card shadow={0} style={{ width: '80%', margin: 'auto' }}>
-                                        <CardTitle style={{ color: '#fff', height: '120px', background: 'lightsalmon' }}>Nhập Văn Bản</CardTitle>
-                                        <CardText style={{ height: '100%' }}>
+                                        <CardTitle style={{ color: '#fff', background: 'lightsalmon' }}>
+                                            Nhập Văn Bản
+
+                                        </CardTitle>
+                                        <CardText style={{ height: '100%', overflow: "auto" }}>
                                             <Grid>
                                                 <Cell col={8}>
                                                     <Textfield
@@ -184,25 +186,15 @@ export default class Page1 extends TrackerReact(React.Component) {
                                                         label="Mã"
                                                         ref="codecv"
                                                         floatingLabel
-                                                        style={{ width: '600px' }}
+                                                        style={{ width: '100%' }}
                                                         />
-                                                </Cell>
-                                                <Cell col={4}>
-                                                    <Dropzone className="dropzone" onDrop={this.onDrop}>
-                                                        <div style={{ color: 'black' }}> Kéo Và Thả Văn Bản Cần Lưu Trữ Vào Đây Hoặc Nhấn Vào Đây </div>
-                                                    </Dropzone>
-                                                </Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={8}><Textfield
-                                                    ref="title"
-                                                    label="Tên"
-                                                    floatingLabel
-                                                    style={{ width: '600px' }}
-                                                    /></Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={4}>
+                                                    <Textfield
+                                                        ref="title"
+                                                        label="Tên"
+                                                        floatingLabel
+                                                        style={{ width: '100%' }}
+                                                        />
+
                                                     <div className="label_dt">Ngày hết hạn</div>
                                                     <DateField className="rdt"
                                                         ref="expiryDate"
@@ -224,43 +216,36 @@ export default class Page1 extends TrackerReact(React.Component) {
                                                             footer={false}
                                                             />
                                                     </DateField>
-                                                </Cell>
-                                            </Grid>
-
-                                            <Grid>
-                                                <Cell col={12}>
                                                     <Textfield
                                                         ref="nk_cv"
                                                         label="Người Ký"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
                                                         />
-                                                </Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={12}>
                                                     <Textfield
                                                         ref="dvxl"
                                                         label="Đơn Vị Xử Lý"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
-                                                        />
+                                                        />                                                   
                                                 </Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={6} >
-                                                    <Textfield
-                                                        label="Not Use"
-                                                        floatingLabel
-                                                        style={{ visibility: "hidden" }}
-                                                        />
+                                                <Cell col={4}>
+                                                    <Dropzone className="dropzone" onDrop={this.onDrop.bind(this)}>
+                                                        <div style={{ color: 'black' }}> Kéo Và Thả Văn Bản Cần Lưu Trữ Vào Đây Hoặc Nhấn Vào Đây
+                                                        <div style={{ height: "10px" }} />
+                                                            <div style={{ color: "red" }}>
+                                                                {this.state.textOnDrop}
+                                                            </div>
+                                                        </div>
+                                                    </Dropzone>
                                                 </Cell>
                                             </Grid>
                                             <Grid style={{ whiteSpace: "nowrap" }}>
-                                                <Cell col={9}></Cell>
+                                                <Cell col={9}> </Cell>
                                                 <Cell col={2}><Button raised colored ripple style={{ fontWeight: "normal", width: '100%' }} onClick={this.submitform.bind(this)}>Đồng Ý</Button></Cell>
                                                 <Cell col={1}><Button raised ripple style={{ fontWeight: "normal" }} onClick={this.closeform.bind(this)}>Hủy Bỏ</Button></Cell>
                                             </Grid>
+
                                         </CardText>
                                     </Card>
                                 </div>
@@ -308,14 +293,14 @@ export default class Page1 extends TrackerReact(React.Component) {
                                                 name="state"
                                                 cellFormatter={(state) => state == 1 ?
                                                     <Chip>
-                                                        <ChipContact  className="mdl-color--red mdl-color-text--white"><b>!</b></ChipContact>
+                                                        <ChipContact className="mdl-color--red mdl-color-text--white"><b>!</b></ChipContact>
                                                         <span style={{ color: 'red', fontSize: 12 }}><strong>Văn bản này gần hết hạn</strong></span>
                                                     </Chip>
 
                                                     :
                                                     state == 0 ?
                                                         <Chip>
-                                                            <ChipContact  className="mdl-color--green"></ChipContact>
+                                                            <ChipContact className="mdl-color--green"></ChipContact>
                                                             <span style={{ fontSize: 12 }}><strong>Còn trong thời hạn</strong></span>
                                                         </Chip>
                                                         :

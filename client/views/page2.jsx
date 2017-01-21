@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TrackerReact from 'meteor/ultimatejs:tracker-react';
 var Dropzone = require('react-dropzone');
 var ReactDom = require('react-dom');
+import { DateField, DatePicker } from 'react-date-picker'
 import { Layout, Table, TableHeader, Header, Content, Button, Icon, Textfield, Card, CardTitle, CardText, CardActions, Grid, Cell, ProgressBar, FABButton, IconButton, } from 'react-mdl';
 var filedata;
 var filename;
@@ -41,33 +42,32 @@ export default class Page2 extends TrackerReact(React.Component) {
     onDrop(acceptedFiles, rejectedFiles) {
         //saveFile(acceptedFiles, acceptedFiles.name);
         file = acceptedFiles[0]
-
         var fileReader = new FileReader()
+        if (file) {
+            method = 'readAsBinaryString';
+            encoding = 'binary';
+            filename = file.name;
+            this.setState({ textOnDrop: "File " + filename + " sẵn sàng upload" });            
+            fileReader.onload = function (file) {
+                filedata = file.srcElement.result
 
-        method = 'readAsBinaryString';
-        encoding = 'binary';
-        filename = file.name;
-
-        fileReader.onload = function (file) {
-            filedata = file.srcElement.result
-            //Meteor.call('saveFile', file.srcElement.result, name, encoding);
+            }
+            fileReader[method](file);
         }
-        fileReader[method](file);
     }
 
     submitform() {
         Session.set('search', "");
         var title = this.refs.title.inputRef.value.trim();
         var codecv = this.refs.codecv.inputRef.value.trim();
-        //var note = this.refs.note.inputRef.value.trim();
         var nk_cv = this.refs.nk_cv.inputRef.value.trim();
         var dvxl = this.refs.dvxl.inputRef.value.trim();
-        //console.log(file)
+        var sendDate = this.refs.sendDate.field.displayValue.trim();
         if (title && codecv) {
 
-            Meteor.call("adddata2", title, codecv, filedata, filename, nk_cv, dvxl, "vbdi", (error) => {
+            Meteor.call("adddata2", title, codecv, sendDate, filedata, filename, nk_cv, dvxl, "vbdi", (error) => {
                 if (error) {
-                    Bert.alert("Lỗi");
+                    Bert.alert("Lỗi, cần ít nhất thông tin về tên và mã số văn bản");
                 }
                 else {
                     Bert.alert('Đã Tạo Công Văn"' + title + '\"', 'info', 'growl-top-right');
@@ -86,10 +86,10 @@ export default class Page2 extends TrackerReact(React.Component) {
         var data2s;
         if (this.state.subscription.data2.ready()) {
             if (Session.get('search') == "") {
-                data2s = data2.find({}, { sort: { 'CreateAT': -1 }, limit: 1000 }).fetch();
+                data2s = data2.find({}, { sort: { 'CreateAT': -1 } }).fetch();
             }
             else {
-                data2s = data2.find({}, { sort: { 'CreateAT': -1 }, limit: 1000 }).fetch();
+                data2s = data2.find({}, { sort: { 'CreateAT': -1 } }).fetch();
             }
         }
 
@@ -117,7 +117,7 @@ export default class Page2 extends TrackerReact(React.Component) {
         return (
             <div>
                 <Layout fixedHeader>
-                    <Header style={{ background: "cadetblue" }} title={<span style={{ fontSize: 32 }}>Quản Lý Văn Bản Đi</span>} scroll >
+                    <Header style={{ background: "cadetblue" }} title={<span style={{ fontSize: 32 }}>QUẢN LÝ VĂN BẢN ĐI</span>} scroll >
 
                         <Textfield
                             onChange={() => { } }
@@ -136,14 +136,17 @@ export default class Page2 extends TrackerReact(React.Component) {
 
                     </Header>
 
-                    <Content>
+                    <Content style={{ overflow: "hidden" }}>
 
                         {
                             this.state.form ?
                                 <div className="Form" >
                                     <Card shadow={0} style={{ width: '80%', margin: 'auto' }}>
-                                        <CardTitle style={{ color: '#fff', height: '120px', background: 'lightsalmon' }}>Nhập Văn Bản</CardTitle>
-                                        <CardText style={{ height: '100%' }}>
+                                        <CardTitle style={{ color: '#fff', background: 'lightsalmon' }}>
+                                            Nhập Văn Bản
+
+                                        </CardTitle>
+                                        <CardText style={{ height: '100%', overflow: "auto" }}>
                                             <Grid>
                                                 <Cell col={8}>
                                                     <Textfield
@@ -151,57 +154,66 @@ export default class Page2 extends TrackerReact(React.Component) {
                                                         label="Mã"
                                                         ref="codecv"
                                                         floatingLabel
-                                                        style={{ width: '600px' }}
+                                                        style={{ width: '100%' }}
                                                         />
-                                                </Cell>
-                                                <Cell col={4}>
-                                                    <Dropzone className="dropzone" onDrop={this.onDrop}>
-                                                        <div style={{ color: 'black' }}> Kéo Và Thả Văn Bản Cần Lưu Trữ Vào Đây Hoặc Nhấn Vào Đây </div>
-                                                    </Dropzone>
-                                                </Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={8}><Textfield
-                                                    ref="title"
-                                                    label="Tên"
-                                                    floatingLabel
-                                                    style={{ width: '600px' }}
-                                                    /></Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={12}>
+                                                    <Textfield
+                                                        ref="title"
+                                                        label="Tên"
+                                                        floatingLabel
+                                                        style={{ width: '100%' }}
+                                                        />
+
+                                                    <div className="label_dt">Ngày gửi</div>
+                                                    <DateField className="rdt"
+                                                        ref="sendDate"
+                                                        dateFormat="YYYY-MM-DD"
+                                                        forceValidDate={true}
+                                                        updateOnDateClick={true}
+                                                        collapseOnDateClick={true}
+                                                        defaultValue={new Date()}
+                                                        showClock={false}
+                                                        >
+                                                        <DatePicker
+                                                            navigation={true}
+                                                            locale="en"
+                                                            forceValidDate={true}
+                                                            highlightWeekends={true}
+                                                            highlightToday={true}
+                                                            weekNumbers={true}
+                                                            weekStartDay={0}
+                                                            footer={false}
+                                                            />
+                                                    </DateField>
                                                     <Textfield
                                                         ref="nk_cv"
                                                         label="Người Ký"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
                                                         />
-                                                </Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={12}>
                                                     <Textfield
                                                         ref="dvxl"
                                                         label="Đơn Vị Xử Lý"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
-                                                        />
+                                                        />                                                   
                                                 </Cell>
-                                            </Grid>
-                                            <Grid>
-                                                <Cell col={6} >
-                                                    <Textfield
-                                                        label="Not Use"
-                                                        floatingLabel
-                                                        style={{ visibility: "hidden" }}
-                                                        />
+                                                <Cell col={4}>
+                                                    <Dropzone className="dropzone" onDrop={this.onDrop.bind(this)}>
+                                                        <div style={{ color: 'black' }}> Kéo Và Thả Văn Bản Cần Lưu Trữ Vào Đây Hoặc Nhấn Vào Đây
+                                                        <div style={{ height: "10px" }} />
+                                                            <div style={{ color: "red" }}>
+                                                                {this.state.textOnDrop}
+                                                            </div>
+                                                        </div>
+                                                    </Dropzone>
                                                 </Cell>
                                             </Grid>
                                             <Grid style={{ whiteSpace: "nowrap" }}>
-                                                <Cell col={9}></Cell>
+                                                <Cell col={9}> </Cell>
                                                 <Cell col={2}><Button raised colored ripple style={{ fontWeight: "normal", width: '100%' }} onClick={this.submitform.bind(this)}>Đồng Ý</Button></Cell>
                                                 <Cell col={1}><Button raised ripple style={{ fontWeight: "normal" }} onClick={this.closeform.bind(this)}>Hủy Bỏ</Button></Cell>
                                             </Grid>
+
                                         </CardText>
                                     </Card>
                                 </div>
@@ -240,10 +252,16 @@ export default class Page2 extends TrackerReact(React.Component) {
                                         </TableHeader>
                                             <TableHeader
                                                 name="filename"
-                                                cellFormatter={(filename) => filename ? <IconButton name="file_download" colored href={"/file/" + filename} /> : <div />}
+                                                cellFormatter={(filename) => filename != null ? <IconButton name="file_download" colored href={"/file/" + filename} /> : <div />}
                                                 >
                                                 Lưu Trữ
                                         </TableHeader>
+                                            <TableHeader
+                                                name="sendDate"
+                                                cellFormatter={(sendDate) => new Date(sendDate).toLocaleDateString().replace(/\//g, '-')}
+                                                >
+                                                Ngày Gửi
+					                    </TableHeader>
                                             <TableHeader
                                                 name="_id"
                                                 cellFormatter={(_id) => <IconButton name="cancel" style={{ color: "red" }} onClick={this.deletedata.bind(this, _id)} />}

@@ -33,10 +33,16 @@ FlowRouter.route("/vbdi", {
 });
 
 
-FlowRouter.route('/file/:filename', {
+FlowRouter.route('/file/vbden/:filename', {
     action(params, queryParams) {       
-        window.open('/file/' + params.filename);
-        FlowRouter.redirect('/');        
+        window.open('/file_vbden/' + params.filename);
+        FlowRouter.redirect('/vbden');        
     },    
 });
 
+FlowRouter.route('/file/vbdi/:filename', {
+    action(params, queryParams) {       
+        window.open('/file_vbdi/' + params.filename);
+        FlowRouter.redirect('/vbdi');        
+    },    
+});
