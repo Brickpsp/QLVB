@@ -47,7 +47,7 @@ export default class Page2 extends TrackerReact(React.Component) {
             method = 'readAsBinaryString';
             encoding = 'binary';
             filename = file.name;
-            this.setState({ textOnDrop: "File " + filename + " sẵn sàng upload" });            
+            this.setState({ textOnDrop: "File " + filename + " sẵn sàng upload" });
             fileReader.onload = function (file) {
                 filedata = file.srcElement.result
 
@@ -77,6 +77,7 @@ export default class Page2 extends TrackerReact(React.Component) {
         }
         this.setState({ form: false });
         this.setState({ refresh: !this.state.refresh });
+        this.setState({ textOnDrop: "" });
         filedata = null;
         filename = null;
     }
@@ -120,7 +121,7 @@ export default class Page2 extends TrackerReact(React.Component) {
                     <Header style={{ background: "cadetblue" }} title={<span style={{ fontSize: 32 }}>QUẢN LÝ VĂN BẢN ĐI</span>} scroll >
 
                         <Textfield
-                            onChange={() => { } }
+                            onChange={() => { }}
                             label="Search"
                             style={{ right: "1%", color: "#ddd" }}
                             expandable
@@ -128,7 +129,7 @@ export default class Page2 extends TrackerReact(React.Component) {
                             ref="search"
                             onKeyPress={this._handleKeyPress.bind(this)}
 
-                            />
+                        />
 
                         <Button raised accent ripple onClick={this.openform.bind(this)}>Thêm Văn Bản</Button>
 
@@ -150,18 +151,18 @@ export default class Page2 extends TrackerReact(React.Component) {
                                             <Grid>
                                                 <Cell col={8}>
                                                     <Textfield
-                                                        onChange={() => { } }
+                                                        onChange={() => { }}
                                                         label="Mã"
                                                         ref="codecv"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
-                                                        />
+                                                    />
                                                     <Textfield
                                                         ref="title"
                                                         label="Tên"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
-                                                        />
+                                                    />
 
                                                     <div className="label_dt">Ngày gửi</div>
                                                     <DateField className="rdt"
@@ -172,7 +173,7 @@ export default class Page2 extends TrackerReact(React.Component) {
                                                         collapseOnDateClick={true}
                                                         defaultValue={new Date()}
                                                         showClock={false}
-                                                        >
+                                                    >
                                                         <DatePicker
                                                             navigation={true}
                                                             locale="en"
@@ -182,20 +183,20 @@ export default class Page2 extends TrackerReact(React.Component) {
                                                             weekNumbers={true}
                                                             weekStartDay={0}
                                                             footer={false}
-                                                            />
+                                                        />
                                                     </DateField>
                                                     <Textfield
                                                         ref="nk_cv"
                                                         label="Người Ký"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
-                                                        />
+                                                    />
                                                     <Textfield
                                                         ref="dvxl"
                                                         label="Đơn Vị Xử Lý"
                                                         floatingLabel
                                                         style={{ width: '100%' }}
-                                                        />                                                   
+                                                    />
                                                 </Cell>
                                                 <Cell col={4}>
                                                     <Dropzone className="dropzone" onDrop={this.onDrop.bind(this)}>
@@ -229,43 +230,43 @@ export default class Page2 extends TrackerReact(React.Component) {
                                             sortable
                                             shadow={2}
                                             rows={g_data2}
-                                            >
+                                        >
                                             <TableHeader
                                                 name="codecv"
-                                                >
+                                            >
                                                 Mã
                                         </TableHeader>
                                             <TableHeader
                                                 name="title"
-                                                >
+                                            >
                                                 Tên
                                         </TableHeader>
                                             <TableHeader
                                                 name="nk_cv"
-                                                >
+                                            >
                                                 Người Ký
                                         </TableHeader>
                                             <TableHeader
                                                 name="dvxl"
-                                                >
+                                            >
                                                 Đơn Vị Xử Lý
                                         </TableHeader>
                                             <TableHeader
                                                 name="filename"
                                                 cellFormatter={(filename) => filename != null ? <IconButton name="file_download" colored href={"/file/" + filename} /> : <div />}
-                                                >
+                                            >
                                                 Lưu Trữ
                                         </TableHeader>
                                             <TableHeader
                                                 name="sendDate"
                                                 cellFormatter={(sendDate) => new Date(sendDate).toLocaleDateString().replace(/\//g, '-')}
-                                                >
+                                            >
                                                 Ngày Gửi
 					                    </TableHeader>
                                             <TableHeader
                                                 name="_id"
                                                 cellFormatter={(_id) => <IconButton name="cancel" style={{ color: "red" }} onClick={this.deletedata.bind(this, _id)} />}
-                                                >
+                                            >
                                                 Xóa
                                         </TableHeader>
                                         </Table>

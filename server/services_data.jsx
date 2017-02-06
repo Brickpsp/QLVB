@@ -2,14 +2,14 @@ import { data, data2 } from '/server/data.jsx';
 import fs from 'fs';
 import Future from 'fibers/future';
 
-JsonRoutes.add('get', '/file_vbdi/:filename', function (req, res, next) {
-  var path = "FileUploaded/vbdi";
+JsonRoutes.add('get', '/file/vbden/:filename', function (req, res, next) {
+  var path = "FileUploaded/vbden";
   name = req.params.filename;
   chroot = "../../../../..";
   path = chroot + (path ? '/' + path + '/' : '/');
   // indicate a download and set the filename of the returned file
   res.writeHead(200, {
-    'Content-Disposition': 'attachment; filename=' + name,
+    'Content-Disposition': 'attachment; filename=' + escape(name),
   });
   // read a stream from the local filesystem, and pipe it to the response object
   // note that anything you put in the `private` directory will sit in
@@ -17,14 +17,14 @@ JsonRoutes.add('get', '/file_vbdi/:filename', function (req, res, next) {
   fs.createReadStream(path + name).pipe(res);
 });
 
-JsonRoutes.add('get', '/file_vbden/:filename', function (req, res, next) {
-  var path = "FileUploaded/vbden";
+JsonRoutes.add('get', '/file/vbdi/:filename', function (req, res, next) {
+  var path = "FileUploaded/vbdi";
   name = req.params.filename;
   chroot = "../../../../..";
   path = chroot + (path ? '/' + path + '/' : '/');
   // indicate a download and set the filename of the returned file
   res.writeHead(200, {
-    'Content-Disposition': 'attachment; filename=' + name,
+    'Content-Disposition': 'attachment; filename=' + escape(name),
   });
   // read a stream from the local filesystem, and pipe it to the response object
   // note that anything you put in the `private` directory will sit in
@@ -79,7 +79,7 @@ Meteor.methods({
     var fn;
     if (filename) {
       fn = lvb + "/" + filename;
-    }    
+    }
     data.insert({
       title: title,
       codecv: codecv,
@@ -119,11 +119,11 @@ Meteor.methods({
   },
 
   adddata2(title, codecv, sendDate, file, filename, nk_cv, dvxl, lvb) {
-    Meteor.call('saveFile', file, filename, lvb);    
+    Meteor.call('saveFile', file, filename, lvb);
     var fn;
     if (filename) {
       fn = lvb + "/" + filename;
-    }    
+    }
     data2.insert({
       title: title,
       codecv: codecv,
